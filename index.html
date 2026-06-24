@@ -43,7 +43,7 @@
 
         .header-info {
             width: 100%; display: flex; justify-content: center;
-            font-size: 22px; font-weight: bold; margin-bottom: 5px;
+            font-size: 22px; font-weight: bold; margin-bottom: 15px;
         }
 
         #score-display {
@@ -51,33 +51,15 @@
             background-color: rgba(0,0,0,0.15); padding: 5px 20px; border-radius: 8px;
         }
 
-        /* --- โครงสร้างตัวต้านทานแบบใหม่ (แยกแถวข้อความกับรูป) --- */
+        /* --- โครงสร้างตัวต้านทานแบบใหม่ (ใหญ่สะใจ ไม่มีตัวหนังสือ) --- */
         .resistor-section {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 25px 0;
+            margin: 20px 0 35px 0;
             width: 100%;
         }
 
-        /* แถวสำหรับวางตัวหนังสือ */
-        .labels-row {
-            display: flex;
-            width: 180px; /* ความกว้างเท่าตัวต้านทาน */
-            justify-content: space-evenly;
-            margin-bottom: 6px;
-        }
-
-        .labels-row span {
-            font-size: 12px;
-            color: #000;
-            font-weight: bold;
-            width: 40px;
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        /* แถวสำหรับวาดรูปตัวต้านทาน */
         .graphic-row {
             display: flex;
             align-items: center;
@@ -85,20 +67,20 @@
         }
 
         .wire { 
-            width: 35px; height: 8px; 
+            width: 40px; height: 12px; /* ขยายขนาดลวด */
             background-color: #cccccc; border: 1px solid #999; 
         }
         
         .resistor-body {
-            width: 180px; height: 55px; 
+            width: 220px; height: 80px; /* ขยายตัวต้านทานให้ใหญ่ขึ้นมาก */
             background-color: #d2691e;
-            border-radius: 12px; border: 2px solid #8b4513;
+            border-radius: 16px; border: 3px solid #8b4513;
             display: flex; justify-content: space-evenly; align-items: center;
-            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.2), inset 0 5px 10px rgba(255,255,255,0.2);
+            box-shadow: inset 0 -8px 15px rgba(0,0,0,0.2), inset 0 8px 15px rgba(255,255,255,0.2);
         }
 
         .band { 
-            width: 16px; height: 100%; 
+            width: 22px; height: 100%; /* ขยายความกว้างแถบสี */
             border-left: 1px solid rgba(0,0,0,0.3); 
             border-right: 1px solid rgba(0,0,0,0.3); 
             box-sizing: border-box;
@@ -137,13 +119,6 @@
         </div>
 
         <div class="resistor-section">
-            <div class="labels-row">
-                <span id="label1"></span>
-                <span id="label2"></span>
-                <span id="label3"></span>
-                <span>Gold</span>
-            </div>
-            
             <div class="graphic-row">
                 <div class="wire"></div>
                 <div class="resistor-body">
@@ -174,117 +149,4 @@
             <button onclick="inputNum('3')">3</button>
             <button onclick="setUnit(1000000, 'MΩ')">MΩ</button>
             
-            <button onclick="clearDisplay()">C</button>
-            <button onclick="inputNum('0')">0</button>
-            <button onclick="inputNum('.')">.</button>
-            <button class="action" onclick="checkAnswer()">Submit</button>
-        </div>
-    </div>
-
-    <script>
-        const colors = [
-            { name: "Black", color: "#000000", val: 0, mult: 1 },
-            { name: "Brown", color: "#8B4513", val: 1, mult: 10 },
-            { name: "Red", color: "#FF0000", val: 2, mult: 100 },
-            { name: "Orange", color: "#FFA500", val: 3, mult: 1000 },
-            { name: "Yellow", color: "#FFFF00", val: 4, mult: 10000 },
-            { name: "Green", color: "#008000", val: 5, mult: 100000 },
-            { name: "Blue", color: "#0000FF", val: 6, mult: 1000000 },
-            { name: "Violet", color: "#EE82EE", val: 7, mult: 10000000 },
-            { name: "Gray", color: "#808080", val: 8, mult: 100000000 },
-            { name: "White", color: "#FFFFFF", val: 9, mult: 1000000000 }
-        ];
-
-        let score = 0;
-        let expectedOhm = 0;
-        
-        let currentInputStr = "";
-        let currentUnitMult = null;
-        let currentUnitStr = "";
-
-        function initGame() {
-            generateResistor();
-            updateScore();
-            clearDisplay();
-        }
-
-        function generateResistor() {
-            let b1 = Math.floor(Math.random() * 9) + 1; 
-            let b2 = Math.floor(Math.random() * 10);
-            let b3 = Math.floor(Math.random() * 7);
-
-            document.getElementById('band1').style.backgroundColor = colors[b1].color;
-            document.getElementById('band2').style.backgroundColor = colors[b2].color;
-            document.getElementById('band3').style.backgroundColor = colors[b3].color;
-
-            document.getElementById('label1').innerText = colors[b1].name;
-            document.getElementById('label2').innerText = colors[b2].name;
-            document.getElementById('label3').innerText = colors[b3].name;
-
-            expectedOhm = ((colors[b1].val * 10) + colors[b2].val) * colors[b3].mult;
-        }
-
-        function inputNum(char) {
-            if (char === '.' && currentInputStr.includes('.')) return;
-            currentInputStr += char;
-            renderDisplay();
-        }
-
-        function setUnit(multiplier, symbol) {
-            if (currentInputStr === "" && symbol !== "") return;
-            currentUnitMult = multiplier;
-            currentUnitStr = symbol;
-            renderDisplay();
-        }
-
-        function clearDisplay() {
-            currentInputStr = "";
-            currentUnitMult = null;
-            currentUnitStr = "";
-            renderDisplay();
-        }
-
-        function renderDisplay() {
-            const displayEl = document.getElementById('display');
-            displayEl.innerHTML = currentInputStr + (currentUnitStr ? ` <span style="color:black; margin-left:5px;">${currentUnitStr}</span>` : "");
-        }
-
-        function checkAnswer() {
-            if (currentInputStr === "" || currentUnitMult === null) {
-                alert("กรุณาใส่ตัวเลขและเลือกหน่วย (Ω, kΩ, MΩ) ให้ครบถ้วน");
-                return;
-            }
-
-            let userValue = parseFloat(currentInputStr) * currentUnitMult;
-
-            if (Math.abs(userValue - expectedOhm) < 0.01) {
-                score++;
-                alert("ถูกต้อง! ลุยข้อต่อไปเลย");
-                initGame();
-            } else {
-                score = 0;
-                updateScore();
-                
-                let formattedText = "";
-                if (expectedOhm >= 1000000) {
-                    let val = expectedOhm / 1000000;
-                    formattedText = ` หรือ ${val} MΩ`;
-                } else if (expectedOhm >= 1000) {
-                    let val = expectedOhm / 1000;
-                    formattedText = ` หรือ ${val} kΩ`;
-                }
-
-                alert(`ผิดครับ! ค่าที่ถูกต้องคือ ${expectedOhm} Ω${formattedText}\nพยายามใหม่นะ!`);
-                clearDisplay();
-            }
-        }
-
-        function updateScore() {
-            document.getElementById('score-display').innerText = `Score: ${score}`;
-        }
-
-        initGame();
-    </script>
-
-</body>
-</html>
+            <button onclick
