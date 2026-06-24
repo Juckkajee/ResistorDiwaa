@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resistor Challenge</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #ff6b6b;
+            font-weight: normal;
+        }
+
+        #game-board {
+            background-color: #fce4ff;
+            border: 4px dashed #666;
+            padding: 20px 40px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 450px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .header-info {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        #score-display {
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Resistor Graphic */
+        .resistor-wrapper {
+            position: relative;
+            margin: 20px 0 40px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wire {
+            width: 60px;
+            height: 10px;
+            background-color: #cccccc;
+            border: 1px solid #999;
+        }
+
+        .resistor-body {
+            width: 160px;
+            height: 50px;
+            background-color: #d2691e;
+            border-radius: 10px;
+            border: 2px solid #8b4513;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            position: relative;
+        }
+
+        .band {
+            width: 15px;
+            height: 50px;
+            border-left: 1px solid rgba(0,0,0,0.2);
+            border-right: 1px solid rgba(0,0,0,0.2);
+        }
+
+        .color-labels {
+            position: absolute;
+            top: -25px;
+            display: flex;
+            width: 160px;
+            justify-content: space-around;
+            padding: 0 10px;
+            font-size: 12px;
+            color: #000;
+        }
+
+        /* Display Screen */
+        #display {
+            width: 100%;
+            height: 60px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 32px;
+            text-align: right;
+            padding: 10px;
+            box-sizing: border-box;
+            color: #800000;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        /* Keypad */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 100%;
+        }
+
+        button {
+            height: 60px;
+            font-size: 24px;
+            background-color: #eeeeee;
+            border: 1px solid #aaa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.1s;
+            color: #000;
+        }
+
+        button:active {
+            background-color: #cccccc;
+        }
+
+        button.action {
+            background-color: #a9a9a9;
+        }
+
+        button.action:active {
+            background-color: #808080;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Resistor Challenge</h1>
+
+    <div id="game-board">
+        <div class="header-info">
+            <span id="score-display">Score: 0</span>
+        </div>
+
+        <div class="resistor-wrapper">
+            <div class="wire"></div>
+            <div class="resistor-body">
+                <div class="color-labels">
+                    <span id="label1"></span>
+                    <span id="label2"></span>
+                    <span id="label3"></span>
+                </div>
+                <div class="band" id="band1"></div>
+                <div class="band" id="band2"></div>
+                <div class="band" id="band3"></div>
+                <div class="band" id="band4" style="background-color: gold; margin-left: 15px;"></div> </div>
+            <div class="wire"></div>
+        </div>
+
+        <div id="display"></div>
+
+        <div class="keypad">
+            <button onclick="inputNum('7')">7</button>
+            <button onclick="inputNum('8')">8</button>
+            <button onclick="inputNum('9')">9</button>
+            <button onclick="setUnit(1, 'Ω')">Ω</button>
+            
+            <button onclick="inputNum('4')">4</button>
+            <button onclick="inputNum('5')">5</button>
+            <button onclick="inputNum('6')">6</button>
+            <button onclick="setUnit(1000, 'kΩ')">kΩ</button>
+            
+            <button onclick="inputNum('1')">1</button>
+            <button onclick="inputNum('2')">2</button>
+            <button onclick="inputNum('3')">3</button>
+            <button onclick="setUnit(1000000, 'MΩ')">MΩ</button>
+            
+            <button onclick="clearDisplay()">C</button>
+            <button onclick="inputNum('0')">0</button>
+            <button onclick="inputNum('.')">.</button>
+            <button class="action" onclick="checkAnswer()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        const colors = [
+            { name: "Black", color: "#000000", val: 0, mult: 1 },
+            { name: "Brown", color: "#8B4513", val: 1, mult: 10 },
+            { name: "Red", color: "#FF0000", val: 2, mult: 100 },
+            { name: "Orange", color: "#FFA500", val: 3, mult: 1000 },
+            { name: "Yellow", color: "#FFFF00", val: 4, mult: 10000 },
+            { name: "Green", color: "#008000", val: 5, mult: 100000 },
+            { name: "Blue", color: "#0000FF", val: 6, mult: 1000000 },
+            { name: "Violet", color: "#EE82EE", val: 7, mult: 10000000 },
+            { name: "Gray", color: "#808080", val: 8, mult: 100000000 },
+            { name: "White", color: "#FFFFFF", val: 9, mult: 1000000000 }
+        ];
+
+        let score = 0;
+        let expectedOhm = 0;
+        
+        let currentInputStr = "";
+        let currentUnitMult = null;
+        let currentUnitStr = "";
+
+        function initGame() {
+            generateResistor();
+            updateScore();
+            clearDisplay();
+        }
+
+        function generateResistor() {
+            // สุ่มหลักที่ 1 (ไม่ให้เป็นสีดำ เพื่อให้ค่ามีความหมายชัดเจน)
+            let b1 = Math.floor(Math.random() * 9) + 1; 
+            // สุ่มหลักที่ 2
+            let b2 = Math.floor(Math.random() * 10);
+            // สุ่มตัวคูณ (จำกัดถึง Blue เพื่อไม่ให้ค่าทะลุระดับเกินเมกะโอห์มมากไป)
+            let b3 = Math.floor(Math.random() * 7);
+
+            // เซ็ตสีบนหน้าจอ
+            document.getElementById('band1').style.backgroundColor = colors[b1].color;
+            document.getElementById('band2').style.backgroundColor = colors[b2].color;
+            document.getElementById('band3').style.backgroundColor = colors[b3].color;
+
+            // เซ็ตชื่อสี (เปิดไว้ถ้าอยากให้มีตัวหนังสือใบ้สีเหมือนในรูป)
+            document.getElementById('label1').innerText = colors[b1].name;
+            document.getElementById('label2').innerText = colors[b2].name;
+            document.getElementById('label3').innerText = colors[b3].name;
+
+            // คำนวณค่าจริง (Band1 Band2 x Multiplier)
+            expectedOhm = ((colors[b1].val * 10) + colors[b2].val) * colors[b3].mult;
+        }
+
+        function inputNum(char) {
+            // ป้องกันการใส่จุดซ้ำ
+            if (char === '.' && currentInputStr.includes('.')) return;
+            currentInputStr += char;
+            renderDisplay();
+        }
+
+        function setUnit(multiplier, symbol) {
+            if (currentInputStr === "" && symbol !== "") return; // ต้องมีตัวเลขก่อนใส่หน่วย
+            currentUnitMult = multiplier;
+            currentUnitStr = symbol;
+            renderDisplay();
+        }
+
+        function clearDisplay() {
+            currentInputStr = "";
+            currentUnitMult = null;
+            currentUnitStr = "";
+            renderDisplay();
+        }
+
+        function renderDisplay() {
+            const displayEl = document.getElementById('display');
+            displayEl.innerHTML = currentInputStr + (currentUnitStr ? ` <span style="color:black; margin-left:10px;">${currentUnitStr}</span>` : "");
+        }
+
+        function checkAnswer() {
+            if (currentInputStr === "" || currentUnitMult === null) {
+                alert("กรุณาใส่ตัวเลขและเลือกหน่วย (Ω, kΩ, MΩ) ให้ครบถ้วน");
+                return;
+            }
+
+            let userValue = parseFloat(currentInputStr) * currentUnitMult;
+
+            // เทียบค่า (ใช้ Math.abs เพื่อป้องกันปัญหาทศนิยมคอมพิวเตอร์คลาดเคลื่อน)
+            if (Math.abs(userValue - expectedOhm) < 0.01) {
+                score++;
+                alert("ถูกต้อง! ลุยข้อต่อไปเลย");
+                initGame();
+            } else {
+                score = 0;
+                updateScore();
+                alert(`ผิดครับ! ค่าที่ถูกต้องคือการนำ ${expectedOhm} โอห์ม\nพยายามใหม่นะ!`);
+                clearDisplay();
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score-display').innerText = `Score: ${score}`;
+        }
+
+        // เริ่มเกมครั้งแรก
+        initGame();
+    </script>
+
+</body>
+</html>
