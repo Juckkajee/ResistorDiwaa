@@ -12,30 +12,31 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px; /* ลดขอบนอกลงเพื่อให้มีพื้นที่เยอะขึ้น */
+            padding: 15px 10px; /* เพิ่มพื้นที่ขอบบนล่าง */
             margin: 0;
             min-height: 100vh;
             box-sizing: border-box;
+            overflow-x: hidden; /* ป้องกันหน้าจอเลื่อนซ้ายขวา */
         }
 
         h1 {
             color: #ff6b6b;
             font-weight: normal;
-            font-size: 28px;
-            margin: 10px 0 20px 0;
+            font-size: 24px; /* ปรับให้พอดีจอมือถือ */
+            margin: 5px 0 15px 0;
             text-align: center;
         }
 
         #game-board {
             background-color: #fce4ff;
             border: 3px dashed #666;
-            padding: 15px 20px;
-            border-radius: 10px;
+            padding: 15px; /* ลดขอบด้านในไม่ให้ดันเนื้อหาออก */
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 400px; /* จำกัดความกว้างสูงสุด แต่ยืดหยุ่นตามจอมือถือ */
+            max-width: 360px; /* ล็อกความกว้างให้พอดีกับมือถือทุกรุ่น */
             box-sizing: border-box;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
@@ -43,130 +44,71 @@
         .header-info {
             width: 100%;
             display: flex;
-            justify-content: center;
+            justify-content: center; /* บังคับให้อยู่ตรงกลางจอ จะได้ไม่โดนตัด */
             color: white;
-            font-size: 28px;
+            font-size: 22px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         #score-display {
             color: #ffffff;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            background-color: rgba(0,0,0,0.1);
-            padding: 5px 15px;
+            background-color: rgba(0,0,0,0.15);
+            padding: 5px 20px;
             border-radius: 8px;
         }
 
         /* Resistor Graphic */
         .resistor-wrapper {
             position: relative;
-            margin: 25px 0 30px 0;
+            margin: 20px 0 25px 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            transform: scale(0.9); /* ย่อส่วนตัวต้านทานลงนิดนึงให้ไม่ล้นจอแนวตั้ง */
+            transform: scale(0.85); /* ย่อขนาดตัวต้านทานลงนิดนึงให้ไม่ล้นกรอบ */
         }
 
-        .wire {
-            width: 40px;
-            height: 8px;
-            background-color: #cccccc;
-            border: 1px solid #999;
-        }
-
+        .wire { width: 35px; height: 8px; background-color: #cccccc; border: 1px solid #999; }
+        
         .resistor-body {
-            width: 140px;
-            height: 46px;
-            background-color: #d2691e;
-            border-radius: 10px;
-            border: 2px solid #8b4513;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 0 8px;
-            position: relative;
+            width: 140px; height: 46px; background-color: #d2691e;
+            border-radius: 10px; border: 2px solid #8b4513;
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 0 8px; position: relative;
         }
 
-        .band {
-            width: 12px;
-            height: 46px;
-            border-left: 1px solid rgba(0,0,0,0.2);
-            border-right: 1px solid rgba(0,0,0,0.2);
-        }
-
+        .band { width: 12px; height: 46px; border-left: 1px solid rgba(0,0,0,0.2); border-right: 1px solid rgba(0,0,0,0.2); }
+        
         .color-labels {
-            position: absolute;
-            top: -22px;
-            display: flex;
-            width: 140px;
-            justify-content: space-around;
-            padding: 0 8px;
-            font-size: 11px;
-            color: #000;
-            font-weight: bold;
+            position: absolute; top: -22px; display: flex; width: 140px;
+            justify-content: space-around; padding: 0 8px; font-size: 11px;
+            color: #000; font-weight: bold;
         }
 
         /* Display Screen */
         #display {
-            width: 100%;
-            height: 50px;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 24px;
-            text-align: right;
-            padding: 10px;
-            box-sizing: border-box;
-            color: #800000;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            overflow: hidden;
+            width: 100%; height: 45px; background-color: white; border: 1px solid #ccc;
+            border-radius: 5px; font-size: 22px; text-align: right; padding: 10px;
+            box-sizing: border-box; color: #800000; margin-bottom: 15px;
+            display: flex; justify-content: flex-end; align-items: center; overflow: hidden;
         }
 
         /* Keypad */
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            width: 100%;
-        }
+        .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 100%; }
 
         button {
-            height: 55px; /* ปรับความสูงให้พอดีกับการกดด้วยนิ้วโป้ง */
-            font-size: 20px;
-            font-weight: bold;
-            background-color: #eeeeee;
-            border: 1px solid #aaa;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.1s;
-            color: #333;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent; /* เอาแสงกระพริบตอนกดบนมือถือออก */
+            height: 50px; /* ลดความสูงปุ่มลงนิดหน่อย */
+            font-size: 18px; font-weight: bold;
+            background-color: #eeeeee; border: 1px solid #aaa; border-radius: 8px;
+            cursor: pointer; transition: background-color 0.1s; color: #333;
+            touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+            padding: 0;
         }
 
-        button:active {
-            background-color: #cccccc;
-            transform: scale(0.95);
-        }
-
-        button.action {
-            background-color: #a9a9a9;
-        }
-
-        button.action:active {
-            background-color: #808080;
-        }
-
-        /* สำหรับมือถือจอเล็กมาก ให้ลดขนาดลงอีกนิด */
-        @media (max-width: 360px) {
-            h1 { font-size: 24px; }
-            button { height: 50px; font-size: 18px; }
-            .resistor-wrapper { transform: scale(0.8); }
-        }
+        button:active { background-color: #cccccc; transform: scale(0.95); }
+        button.action { background-color: #a9a9a9; }
+        button.action:active { background-color: #808080; }
     </style>
 </head>
 <body>
@@ -304,4 +246,25 @@
                 updateScore();
                 
                 let formattedText = "";
-                if
+                if (expectedOhm >= 1000000) {
+                    let val = expectedOhm / 1000000;
+                    formattedText = ` หรือ ${val} MΩ`;
+                } else if (expectedOhm >= 1000) {
+                    let val = expectedOhm / 1000;
+                    formattedText = ` หรือ ${val} kΩ`;
+                }
+
+                alert(`ผิดครับ! ค่าที่ถูกต้องคือ ${expectedOhm} Ω${formattedText}\nพยายามใหม่นะ!`);
+                clearDisplay();
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score-display').innerText = `Score: ${score}`;
+        }
+
+        initGame();
+    </script>
+
+</body>
+</html>
