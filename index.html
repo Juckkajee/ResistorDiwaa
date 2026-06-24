@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Resistor Challenge</title>
     <style>
         body {
@@ -12,127 +12,145 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 10px; /* ลดขอบนอกลงเพื่อให้มีพื้นที่เยอะขึ้น */
+            margin: 0;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
         h1 {
             color: #ff6b6b;
             font-weight: normal;
+            font-size: 28px;
+            margin: 10px 0 20px 0;
+            text-align: center;
         }
 
         #game-board {
             background-color: #fce4ff;
-            border: 4px dashed #666;
-            padding: 20px 40px;
+            border: 3px dashed #666;
+            padding: 15px 20px;
             border-radius: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 450px;
+            width: 100%;
+            max-width: 400px; /* จำกัดความกว้างสูงสุด แต่ยืดหยุ่นตามจอมือถือ */
+            box-sizing: border-box;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
         .header-info {
             width: 100%;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             color: white;
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         #score-display {
             color: #ffffff;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            background-color: rgba(0,0,0,0.1);
+            padding: 5px 15px;
+            border-radius: 8px;
         }
 
         /* Resistor Graphic */
         .resistor-wrapper {
             position: relative;
-            margin: 20px 0 40px 0;
+            margin: 25px 0 30px 0;
             display: flex;
             align-items: center;
             justify-content: center;
+            transform: scale(0.9); /* ย่อส่วนตัวต้านทานลงนิดนึงให้ไม่ล้นจอแนวตั้ง */
         }
 
         .wire {
-            width: 60px;
-            height: 10px;
+            width: 40px;
+            height: 8px;
             background-color: #cccccc;
             border: 1px solid #999;
         }
 
         .resistor-body {
-            width: 160px;
-            height: 50px;
+            width: 140px;
+            height: 46px;
             background-color: #d2691e;
             border-radius: 10px;
             border: 2px solid #8b4513;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 0 10px;
+            padding: 0 8px;
             position: relative;
         }
 
         .band {
-            width: 15px;
-            height: 50px;
+            width: 12px;
+            height: 46px;
             border-left: 1px solid rgba(0,0,0,0.2);
             border-right: 1px solid rgba(0,0,0,0.2);
         }
 
         .color-labels {
             position: absolute;
-            top: -25px;
+            top: -22px;
             display: flex;
-            width: 160px;
+            width: 140px;
             justify-content: space-around;
-            padding: 0 10px;
-            font-size: 12px;
+            padding: 0 8px;
+            font-size: 11px;
             color: #000;
+            font-weight: bold;
         }
 
         /* Display Screen */
         #display {
             width: 100%;
-            height: 60px;
+            height: 50px;
             background-color: white;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 32px;
+            font-size: 24px;
             text-align: right;
             padding: 10px;
             box-sizing: border-box;
             color: #800000;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: flex-end;
             align-items: center;
+            overflow: hidden;
         }
 
         /* Keypad */
         .keypad {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 8px;
             width: 100%;
         }
 
         button {
-            height: 60px;
-            font-size: 24px;
+            height: 55px; /* ปรับความสูงให้พอดีกับการกดด้วยนิ้วโป้ง */
+            font-size: 20px;
+            font-weight: bold;
             background-color: #eeeeee;
             border: 1px solid #aaa;
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.1s;
-            color: #000;
+            color: #333;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent; /* เอาแสงกระพริบตอนกดบนมือถือออก */
         }
 
         button:active {
             background-color: #cccccc;
+            transform: scale(0.95);
         }
 
         button.action {
@@ -141,6 +159,13 @@
 
         button.action:active {
             background-color: #808080;
+        }
+
+        /* สำหรับมือถือจอเล็กมาก ให้ลดขนาดลงอีกนิด */
+        @media (max-width: 360px) {
+            h1 { font-size: 24px; }
+            button { height: 50px; font-size: 18px; }
+            .resistor-wrapper { transform: scale(0.8); }
         }
     </style>
 </head>
@@ -164,7 +189,8 @@
                 <div class="band" id="band1"></div>
                 <div class="band" id="band2"></div>
                 <div class="band" id="band3"></div>
-                <div class="band" id="band4" style="background-color: gold; margin-left: 15px;"></div> </div>
+                <div class="band" id="band4" style="background-color: gold; margin-left: 10px;"></div>
+            </div>
             <div class="wire"></div>
         </div>
 
@@ -221,36 +247,29 @@
         }
 
         function generateResistor() {
-            // สุ่มหลักที่ 1 (ไม่ให้เป็นสีดำ เพื่อให้ค่ามีความหมายชัดเจน)
             let b1 = Math.floor(Math.random() * 9) + 1; 
-            // สุ่มหลักที่ 2
             let b2 = Math.floor(Math.random() * 10);
-            // สุ่มตัวคูณ (จำกัดถึง Blue เพื่อไม่ให้ค่าทะลุระดับเกินเมกะโอห์มมากไป)
             let b3 = Math.floor(Math.random() * 7);
 
-            // เซ็ตสีบนหน้าจอ
             document.getElementById('band1').style.backgroundColor = colors[b1].color;
             document.getElementById('band2').style.backgroundColor = colors[b2].color;
             document.getElementById('band3').style.backgroundColor = colors[b3].color;
 
-            // เซ็ตชื่อสี (เปิดไว้ถ้าอยากให้มีตัวหนังสือใบ้สีเหมือนในรูป)
             document.getElementById('label1').innerText = colors[b1].name;
             document.getElementById('label2').innerText = colors[b2].name;
             document.getElementById('label3').innerText = colors[b3].name;
 
-            // คำนวณค่าจริง (Band1 Band2 x Multiplier)
             expectedOhm = ((colors[b1].val * 10) + colors[b2].val) * colors[b3].mult;
         }
 
         function inputNum(char) {
-            // ป้องกันการใส่จุดซ้ำ
             if (char === '.' && currentInputStr.includes('.')) return;
             currentInputStr += char;
             renderDisplay();
         }
 
         function setUnit(multiplier, symbol) {
-            if (currentInputStr === "" && symbol !== "") return; // ต้องมีตัวเลขก่อนใส่หน่วย
+            if (currentInputStr === "" && symbol !== "") return;
             currentUnitMult = multiplier;
             currentUnitStr = symbol;
             renderDisplay();
@@ -265,7 +284,7 @@
 
         function renderDisplay() {
             const displayEl = document.getElementById('display');
-            displayEl.innerHTML = currentInputStr + (currentUnitStr ? ` <span style="color:black; margin-left:10px;">${currentUnitStr}</span>` : "");
+            displayEl.innerHTML = currentInputStr + (currentUnitStr ? ` <span style="color:black; margin-left:5px;">${currentUnitStr}</span>` : "");
         }
 
         function checkAnswer() {
@@ -276,7 +295,6 @@
 
             let userValue = parseFloat(currentInputStr) * currentUnitMult;
 
-            // เทียบค่า (ใช้ Math.abs เพื่อป้องกันปัญหาทศนิยมคอมพิวเตอร์คลาดเคลื่อน)
             if (Math.abs(userValue - expectedOhm) < 0.01) {
                 score++;
                 alert("ถูกต้อง! ลุยข้อต่อไปเลย");
@@ -284,18 +302,6 @@
             } else {
                 score = 0;
                 updateScore();
-                alert(`ผิดครับ! ค่าที่ถูกต้องคือการนำ ${expectedOhm} โอห์ม\nพยายามใหม่นะ!`);
-                clearDisplay();
-            }
-        }
-
-        function updateScore() {
-            document.getElementById('score-display').innerText = `Score: ${score}`;
-        }
-
-        // เริ่มเกมครั้งแรก
-        initGame();
-    </script>
-
-</body>
-</html>
+                
+                let formattedText = "";
+                if
