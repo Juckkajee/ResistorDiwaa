@@ -149,4 +149,115 @@
             <button onclick="inputNum('3')">3</button>
             <button onclick="setUnit(1000000, 'MΩ')">MΩ</button>
             
-            <button onclick
+            <button onclick="clearDisplay()">C</button>
+            <button onclick="inputNum('0')">0</button>
+            <button onclick="inputNum('.')">.</button>
+            <button class="action" onclick="checkAnswer()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        const colors = [
+            { name: "Black", color: "#000000", val: 0, mult: 1 },
+            { name: "Brown", color: "#8B4513", val: 1, mult: 10 },
+            { name: "Red", color: "#FF0000", val: 2, mult: 100 },
+            { name: "Orange", color: "#FFA500", val: 3, mult: 1000 },
+            { name: "Yellow", color: "#FFFF00", val: 4, mult: 10000 },
+            { name: "Green", color: "#008000", val: 5, mult: 100000 },
+            { name: "Blue", color: "#0000FF", val: 6, mult: 1000000 },
+            { name: "Violet", color: "#EE82EE", val: 7, mult: 10000000 },
+            { name: "Gray", color: "#808080", val: 8, mult: 100000000 },
+            { name: "White", color: "#FFFFFF", val: 9, mult: 1000000000 }
+        ];
+
+        let score = 0;
+        let expectedOhm = 0;
+        
+        let currentInputStr = "";
+        let currentUnitMult = null;
+        let currentUnitStr = "";
+
+        function initGame() {
+            generateResistor();
+            updateScore();
+            clearDisplay();
+        }
+
+        function generateResistor() {
+            let b1 = Math.floor(Math.random() * 9) + 1; 
+            let b2 = Math.floor(Math.random() * 10);
+            let b3 = Math.floor(Math.random() * 7);
+
+            document.getElementById('band1').style.backgroundColor = colors[b1].color;
+            document.getElementById('band2').style.backgroundColor = colors[b2].color;
+            document.getElementById('band3').style.backgroundColor = colors[b3].color;
+
+            // นำโค้ดอัปเดตตัวหนังสือออกเพื่อไม่ให้เกิด Error
+
+            expectedOhm = ((colors[b1].val * 10) + colors[b2].val) * colors[b3].mult;
+        }
+
+        function inputNum(char) {
+            if (char === '.' && currentInputStr.includes('.')) return;
+            currentInputStr += char;
+            renderDisplay();
+        }
+
+        function setUnit(multiplier, symbol) {
+            if (currentInputStr === "" && symbol !== "") return;
+            currentUnitMult = multiplier;
+            currentUnitStr = symbol;
+            renderDisplay();
+        }
+
+        function clearDisplay() {
+            currentInputStr = "";
+            currentUnitMult = null;
+            currentUnitStr = "";
+            renderDisplay();
+        }
+
+        function renderDisplay() {
+            const displayEl = document.getElementById('display');
+            displayEl.innerHTML = currentInputStr + (currentUnitStr ? ` <span style="color:black; margin-left:5px;">${currentUnitStr}</span>` : "");
+        }
+
+        function checkAnswer() {
+            if (currentInputStr === "" || currentUnitMult === null) {
+                alert("กรุณาใส่ตัวเลขและเลือกหน่วย (Ω, kΩ, MΩ) ให้ครบถ้วน");
+                return;
+            }
+
+            let userValue = parseFloat(currentInputStr) * currentUnitMult;
+
+            if (Math.abs(userValue - expectedOhm) < 0.01) {
+                score++;
+                alert("ถูกต้อง! ลุยข้อต่อไปเลย");
+                initGame();
+            } else {
+                score = 0;
+                updateScore();
+                
+                let formattedText = "";
+                if (expectedOhm >= 1000000) {
+                    let val = expectedOhm / 1000000;
+                    formattedText = ` หรือ ${val} MΩ`;
+                } else if (expectedOhm >= 1000) {
+                    let val = expectedOhm / 1000;
+                    formattedText = ` หรือ ${val} kΩ`;
+                }
+
+                alert(`ผิดครับ! ค่าที่ถูกต้องคือ ${expectedOhm} Ω${formattedText}\nพยายามใหม่นะ!`);
+                clearDisplay();
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score-display').innerText = `Score: ${score}`;
+        }
+
+        initGame();
+    </script>
+
+</body>
+</html>
